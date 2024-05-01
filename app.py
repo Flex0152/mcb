@@ -1,33 +1,52 @@
 import pyperclip
 from time import sleep
 import pygetwindow as gw
-
-from model import Content, Window, engine
+from pathlib import Path
+from model import Content, Window, Base
 from sqlalchemy.orm import Session
 import sqlalchemy as sa
+from sqlalchemy import create_engine
 
 
-try:
-    while(True):
-        sleep(0.5)
-        print(pyperclip.paste())
-        txt = pyperclip.waitForNewPaste()
-        win = str(gw.getActiveWindow().title).split("-")
-        
+def create_database_if_not_exists(database_name: str):
+    current_path = Path(__file__).parent
+    engine = create_engine(f"sqlite:///{current_path}/{database_name}")
+    if not Path(current_path / database_name).is_file():
+            Base.metadata.create_all(engine)
+    
+    return engine
+
+def create_window(window_name, session_name):
+    stmt = sa.Select(Window).where(Window.windowName == window_name[-1].strip())
+    window = session_name.scalar(stmt)
+    if not window:
+        window = Window(window_name[-1].strip())
+    return window
+
+def add_content(txt, window, session_name):
+    content = Content(txt)
+    window.contents.append(content)
+    session_name.add(window)
+    session_name.commit()
+
+
+def main():
+    try:
+        engine = create_database_if_not_exists("texts.db")
         with Session(engine) as session:
-            stmt = sa.Select(Window).where(Window.windowName == win[-1].strip())
-            window = session.scalar(stmt)
-            if not window:
-                window = Window(win[-1].strip())
-            
-            content = Content(txt)
-            window.contents.append(content)
+            while(True):
+                sleep(0.5)
+                print(pyperclip.paste())
+                txt = pyperclip.waitForNewPaste()
+                window_name = str(gw.getActiveWindow().title).split("-")
+                
+                window = create_window(window_name, session)
+                add_content(txt, window, session)
 
-            session.add(window)
-            session.add(content)
-            session.commit()
+    except KeyboardInterrupt:
+        print("[*] Programm beendet!")
+    except UnicodeDecodeError as e:
+        print("[!] Im Versuch Inhalte zu schreiben ist ein Fehler aufgetreten.")
 
-except KeyboardInterrupt:
-    print("[*] Programm beendet!")
-except UnicodeDecodeError as e:
-    print("[!] Im Versuch Inhalte zu schreiben ist ein Fehler aufgetreten.")
+if __name__ == '__main__':
+    main()
