@@ -29,10 +29,11 @@ def add_content(txt, window, session_name):
     session_name.add(window)
     session_name.commit()
 
+engine = create_database_if_not_exists("texts.db")
+
 
 def main():
     try:
-        engine = create_database_if_not_exists("texts.db")
         with Session(engine) as session:
             while(True):
                 sleep(0.5)
@@ -47,6 +48,7 @@ def main():
         print("[*] Programm beendet!")
     except UnicodeDecodeError as e:
         print("[!] Im Versuch Inhalte zu schreiben ist ein Fehler aufgetreten.")
+
 
 if __name__ == '__main__':
     main()
