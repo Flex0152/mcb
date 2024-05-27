@@ -29,7 +29,7 @@ def add_content(txt, window, session_name):
     session_name.add(window)
     session_name.commit()
 
-engine = create_database_if_not_exists("texts.db")
+engine = create_database_if_not_exists("tester.db")
 
 
 def main():
