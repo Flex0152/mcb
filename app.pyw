@@ -2,6 +2,8 @@ import pyperclip
 from time import sleep
 import pygetwindow as gw
 from pathlib import Path
+from rich.panel import Panel
+from rich import print
 from model import Content, Window, Base
 from sqlalchemy.orm import Session
 import sqlalchemy as sa
@@ -37,7 +39,7 @@ def main():
         with Session(engine) as session:
             while(True):
                 sleep(0.5)
-                print(pyperclip.paste())
+                print(Panel(pyperclip.paste()))
                 txt = pyperclip.waitForNewPaste()
                 window_name = str(gw.getActiveWindow().title).split("-")
                 
