@@ -55,8 +55,11 @@ def get_content_by_windowName(name: str):
     Bei uneingeutigen Namen, wird das zuerst gefundene Fenster verwendet."""
     with so.Session(engine) as session:
         result = session.scalar(sa.Select(Window).where(Window.windowName.like(f"%{name}%")))
-        return result.contents
-
+        if result != None:
+            return result.contents
+        else:
+            return result
+        
 
 @app.command()
 def show(id: int = 0, suchbegriff: str = "", windowName: str = "") -> None:
@@ -73,8 +76,11 @@ def show(id: int = 0, suchbegriff: str = "", windowName: str = "") -> None:
             print(Panel(":-1: Keine Ergebnisse"))
     if windowName != "":
         results = get_content_by_windowName(windowName)
-        for item in results:
-            print(Panel(item.content))
+        if results != None:
+            for item in results:
+                print(Panel(item.content))
+        else:
+            print(Panel(":-1: Keine Ergebnisse"))
 
 
 if __name__ == '__main__':

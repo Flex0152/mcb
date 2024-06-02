@@ -41,8 +41,17 @@ class Content2Window(Base):
     contentID: Mapped[int] = Column(Integer, ForeignKey('tblContent.id'))
     windowID: Mapped[int] = Column(Integer, ForeignKey('tblWindow.id'))
 
+
+def create_database_if_not_exists(database_name: str):
+    current_path = Path(__file__).parent
+    engine = create_engine(f"sqlite:///{current_path}/{database_name}")
+    if not Path(current_path / database_name).is_file():
+            Base.metadata.create_all(engine)
+    
+    return engine
+
 current_path = Path(__file__).parent
-engine = create_engine(f"sqlite:///{current_path}/tester.db")
+engine = create_database_if_not_exists("tester.db")
 
 
 # if __name__ == '__main__':
