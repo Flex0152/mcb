@@ -3,7 +3,7 @@ Zum laden der Elemente in die Zwischenablage.
 '''
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from model import Content
+from model import Content, Window
 from app import engine
 import pandas as pd
 from rich.panel import Panel
@@ -33,26 +33,48 @@ def get_all_rows():
         result = session.scalars(sa.Select(Content)).all()
     return result
 
-
-@app.command()
-def get_content_by_name(name: str) -> None:
+def get_content_by_name(name: str):
     """Ruft den Content der name enthält ab. Gibt den gefundenen
     Content über Std Out in einem rich Panel aus"""
     with so.Session(engine) as session:
         result = session \
             .scalars(sa.Select(Content) \
             .filter(Content.content.like(f"%{name}%"))).all()
-        for item in result:
-            print(Panel(item.content))
+        return result
 
-@app.command()
-def get_content_by_id(id: int) -> None:
+def get_content_by_id(id: int):
     """Ruft den Content der angegebenen ID ab. Gibt den gefundenen 
     Content über Std Out in einem rich Panel aus"""
     with so.Session(engine) as session:
         stmt = sa.Select(Content).where(Content.id == id)
         result = session.scalar(stmt)
-    print(Panel(result.content))
+    return result
+
+def get_content_by_windowName(name: str):
+    """Ruft den Content des angegebenen Fensters ab. 
+    Bei uneingeutigen Namen, wird das zuerst gefundene Fenster verwendet."""
+    with so.Session(engine) as session:
+        result = session.scalar(sa.Select(Window).where(Window.windowName.like(f"%{name}%")))
+        return result.contents
+
+
+@app.command()
+def show(id: int = 0, suchbegriff: str = "", windowName: str = "") -> None:
+    """Ausgabe der gesuchten Werte. Reagiert auf id, Suchbegriff oder Fenstername"""
+    if id != 0:
+        result = get_content_by_id(id)
+        print(Panel(result.content) if result != None else Panel(":-1: Keine Ergebnisse"))
+    if suchbegriff != "":
+        result = get_content_by_name(suchbegriff)
+        if len(result) != 0:
+            for item in result:
+                print(Panel(item.content))
+        else:
+            print(Panel(":-1: Keine Ergebnisse"))
+    if windowName != "":
+        results = get_content_by_windowName(windowName)
+        for item in results:
+            print(Panel(item.content))
 
 
 if __name__ == '__main__':
