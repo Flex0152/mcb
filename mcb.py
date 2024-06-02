@@ -4,7 +4,8 @@ Zum laden der Elemente in die Zwischenablage.
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from model import Content, Window
-from app import engine
+# from app import engine
+from model import engine
 import pandas as pd
 from rich.panel import Panel
 from rich import print
@@ -12,7 +13,6 @@ from typer import Typer
 
 
 app = Typer()
-
 
 def convert_to_DataFrame(result: list) -> pd.DataFrame:
     """Erstellt im ersten Schritt eine Liste mit Dictonarys. Diese Liste 

@@ -8,6 +8,7 @@ from model import Content, Window, Base
 from sqlalchemy.orm import Session
 import sqlalchemy as sa
 from sqlalchemy import create_engine
+from model import engine
 
 
 def create_database_if_not_exists(database_name: str):
@@ -31,7 +32,8 @@ def add_content(txt, window, session_name):
     session_name.add(window)
     session_name.commit()
 
-engine = create_database_if_not_exists("tester.db")
+# ready to remove!!!
+# engine = create_database_if_not_exists("tester.db")
 
 
 def main():

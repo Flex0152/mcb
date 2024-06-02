@@ -41,8 +41,8 @@ class Content2Window(Base):
     contentID: Mapped[int] = Column(Integer, ForeignKey('tblContent.id'))
     windowID: Mapped[int] = Column(Integer, ForeignKey('tblWindow.id'))
 
-# current_path = Path(__file__).parent
-# engine = create_engine(f"sqlite:///{current_path}/texts.db")
+current_path = Path(__file__).parent
+engine = create_engine(f"sqlite:///{current_path}/tester.db")
 
 
 # if __name__ == '__main__':
