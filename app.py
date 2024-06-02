@@ -10,14 +10,14 @@ import sqlalchemy as sa
 from sqlalchemy import create_engine
 from model import engine
 
-
-def create_database_if_not_exists(database_name: str):
-    current_path = Path(__file__).parent
-    engine = create_engine(f"sqlite:///{current_path}/{database_name}")
-    if not Path(current_path / database_name).is_file():
-            Base.metadata.create_all(engine)
+# ready to remove !!!!
+# def create_database_if_not_exists(database_name: str):
+#     current_path = Path(__file__).parent
+#     engine = create_engine(f"sqlite:///{current_path}/{database_name}")
+#     if not Path(current_path / database_name).is_file():
+#             Base.metadata.create_all(engine)
     
-    return engine
+#     return engine
 
 def create_window(window_name, session_name):
     stmt = sa.Select(Window).where(Window.windowName == window_name[-1].strip())
