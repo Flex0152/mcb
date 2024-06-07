@@ -51,7 +51,7 @@ def create_database_if_not_exists(database_name: str):
     return engine
 
 current_path = Path(__file__).parent
-engine = create_database_if_not_exists("tester.db")
+engine = create_database_if_not_exists("texts.db")
 
 
 # if __name__ == '__main__':

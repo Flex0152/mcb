@@ -3,7 +3,7 @@ from time import sleep
 import pygetwindow as gw
 from pathlib import Path
 from rich.panel import Panel
-from rich import print
+from rich import print as rprint
 from model import Content, Window, Base
 from sqlalchemy.orm import Session
 import sqlalchemy as sa
@@ -40,19 +40,28 @@ def main():
     try:
         with Session(engine) as session:
             while(True):
-                sleep(0.5)
-                print(Panel(pyperclip.paste()))
-                txt = pyperclip.waitForNewPaste()
-                window_name = str(gw.getActiveWindow().title).split("-")
                 
+                try:
+                    sleep(0.5)
+                    rprint(pyperclip.paste())
+                    print()
+                    txt = pyperclip.waitForNewPaste()
+                    if txt == "":
+                        txt = "Inhalt nicht zu erfassen!"
+                # Wird das Notebook gesperrt, ist kein Zugriff auf die Zwischenablage möglich. -> Ausnahme wird abgefangen und ignoriert.
+                except pyperclip.PyperclipWindowsException:
+                    continue
+
+                window_name = str(gw.getActiveWindow().title).split("-")
                 window = create_window(window_name, session)
+                
                 add_content(txt, window, session)
 
     except KeyboardInterrupt:
-        print("[*] Programm beendet!")
+        rprint("[*] Programm beendet!")
     except UnicodeDecodeError as e:
-        print("[!] Im Versuch Inhalte zu schreiben ist ein Fehler aufgetreten.")
-
+        rprint("[!] Im Versuch Inhalte zu schreiben ist ein Fehler aufgetreten.")
+    
 
 if __name__ == '__main__':
     main()
