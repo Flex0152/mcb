@@ -1,23 +1,12 @@
 import pyperclip
 from time import sleep
 import pygetwindow as gw
-from pathlib import Path
-from rich.panel import Panel
 from rich import print as rprint
-from model import Content, Window, Base
+from model import Content, Window
 from sqlalchemy.orm import Session
 import sqlalchemy as sa
-from sqlalchemy import create_engine
 from model import engine
 
-# ready to remove !!!!
-# def create_database_if_not_exists(database_name: str):
-#     current_path = Path(__file__).parent
-#     engine = create_engine(f"sqlite:///{current_path}/{database_name}")
-#     if not Path(current_path / database_name).is_file():
-#             Base.metadata.create_all(engine)
-    
-#     return engine
 
 def create_window(window_name, session_name):
     stmt = sa.Select(Window).where(Window.windowName == window_name[-1].strip())
@@ -32,14 +21,11 @@ def add_content(txt, window, session_name):
     session_name.add(window)
     session_name.commit()
 
-# ready to remove!!!
-# engine = create_database_if_not_exists("tester.db")
-
 
 def main():
     try:
         with Session(engine) as session:
-            while(True):
+            while True:
                 
                 try:
                     sleep(0.5)
