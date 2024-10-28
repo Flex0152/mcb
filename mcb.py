@@ -33,13 +33,27 @@ def get_all_rows():
         result = session.scalars(sa.Select(Content)).all()
     return result
 
-def get_content_by_name(name: str):
+def get_content_by_name(name: str) -> list:
     """Ruft den Content der name enthält ab. Gibt den gefundenen
-    Content über Std Out in einem rich Panel aus"""
+    Content als Liste zurück"""
     with so.Session(engine) as session:
         result = session \
             .scalars(sa.Select(Content) \
             .filter(Content.content.like(f"%{name}%"))).all()
+        return result if len(result) != 0 else None
+
+def get_content_by_windowname(name: str):
+    """Ruft den Content des angegebenen Fensters ab."""
+    with so.Session(engine) as session:
+        contents = (
+        session.query(Content.content)
+        .join(Content.windows)
+        .filter(Window.windowName == name)
+        .all()
+        )
+        for content in contents:
+            print(content.content)
+        result = [content.content for content in contents]
         return result
 
 def get_content_by_id(id: int):
@@ -50,38 +64,27 @@ def get_content_by_id(id: int):
         result = session.scalar(stmt)
     return result
 
-def get_content_by_windowName(name: str):
-    """Ruft den Content des angegebenen Fensters ab. 
-    Bei uneingeutigen Namen, wird das zuerst gefundene Fenster verwendet."""
-    with so.Session(engine) as session:
-        result = session.scalar(sa.Select(Window).where(Window.windowName.like(f"%{name}%")))
-        if result != None:
-            return result.contents
-        else:
-            return result
-        
 
 @app.command()
-def show(id: int = 0, suchbegriff: str = "", windowName: str = "") -> None:
-    """Ausgabe der gesuchten Werte. Reagiert auf id, Suchbegriff oder Fenstername"""
-    if id != 0:
-        result = get_content_by_id(id)
-        print(Panel(result.content) if result != None else Panel(":-1: Keine Ergebnisse"))
+def show(suchbegriff: str = "", windowname: str = "") -> None:
+    """Ausgabe der gesuchten Werte. Reagiert Suchbegriff oder Fenstername"""
+
     if suchbegriff != "":
-        result = get_content_by_name(suchbegriff)
-        if len(result) != 0:
-            for item in result:
-                print(Panel(item.content))
-        else:
-            print(Panel(":-1: Keine Ergebnisse"))
-    if windowName != "":
-        results = get_content_by_windowName(windowName)
-        if results != None:
+        results = get_content_by_name(suchbegriff)
+        if len(results) > 0:
             for item in results:
                 print(Panel(item.content))
         else:
             print(Panel(":-1: Keine Ergebnisse"))
 
+    if windowname != "":
+        results = get_content_by_windowname(windowname)
+        if len(results) > 0:
+            for item in results:
+                print(Panel(item))
+        else:
+            print(Panel(":-1: Keine Ergebnisse"))
 
-if __name__ == '__main__':
+
+if __name__ == '__main__':    
     app()
