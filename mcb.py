@@ -37,10 +37,12 @@ def get_content_by_name(name: str) -> list:
     """Ruft den Content der name enthält ab. Gibt den gefundenen
     Content als Liste zurück"""
     with so.Session(engine) as session:
-        result = session \
+        contents = session \
             .scalars(sa.Select(Content) \
             .filter(Content.content.like(f"%{name}%"))).all()
-        return result if len(result) != 0 else None
+        
+        result = [content.content for content in contents]
+        return result 
 
 def get_content_by_windowname(name: str):
     """Ruft den Content des angegebenen Fensters ab."""
@@ -48,11 +50,10 @@ def get_content_by_windowname(name: str):
         contents = (
         session.query(Content.content)
         .join(Content.windows)
-        .filter(Window.windowName == name)
+        .filter(Window.windowName.like(f"%{name}%"))
         .all()
         )
-        for content in contents:
-            print(content.content)
+        
         result = [content.content for content in contents]
         return result
 
@@ -71,14 +72,9 @@ def show(suchbegriff: str = "", windowname: str = "") -> None:
 
     if suchbegriff != "":
         results = get_content_by_name(suchbegriff)
-        # if len(results) > 0:
-        #     for item in results:
-        #         print(Panel(item.content))
-        # else:
-        #     print(Panel(":-1: Keine Ergebnisse"))
-
-    if windowname != "":
+    elif windowname != "":
         results = get_content_by_windowname(windowname)
+
     if len(results) > 0:
         for item in results:
             print(Panel(item))
