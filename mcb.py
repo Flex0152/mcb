@@ -71,19 +71,19 @@ def show(suchbegriff: str = "", windowname: str = "") -> None:
 
     if suchbegriff != "":
         results = get_content_by_name(suchbegriff)
-        if len(results) > 0:
-            for item in results:
-                print(Panel(item.content))
-        else:
-            print(Panel(":-1: Keine Ergebnisse"))
+        # if len(results) > 0:
+        #     for item in results:
+        #         print(Panel(item.content))
+        # else:
+        #     print(Panel(":-1: Keine Ergebnisse"))
 
     if windowname != "":
         results = get_content_by_windowname(windowname)
-        if len(results) > 0:
-            for item in results:
-                print(Panel(item))
-        else:
-            print(Panel(":-1: Keine Ergebnisse"))
+    if len(results) > 0:
+        for item in results:
+            print(Panel(item))
+    else:
+        print(Panel(":-1: Keine Ergebnisse"))
 
 
 if __name__ == '__main__':    
