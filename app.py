@@ -1,5 +1,6 @@
 import pyperclip
 from time import sleep
+from datetime import datetime
 import pygetwindow as gw
 from rich import print as rprint
 from model import Content, Window
@@ -87,8 +88,10 @@ class ClipboardMonitor(tk.Tk):
                 window = create_window(window_name, session)
                 # add the content to database
                 add_content(new_value, window, session)
-
-            self.text_widget.insert(tk.END, window_name[-1].strip() + "\n")
+            window_content = f"{30 * "+"}\n" + \
+                f"{datetime.strftime(datetime.now(), '%a %d %b %Y, %H:%M:%S')} \n" + \
+                f"{window_name[-1].strip()} \n{30 * "-"}\n"
+            self.text_widget.insert(tk.END, window_content)
             self.text_widget.insert(tk.END, new_value + "\n\n")
             self.old_value = new_value
 
