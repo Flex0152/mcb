@@ -10,8 +10,6 @@ from model import engine
 
 import tkinter as tk
 
-from icecream import ic
-
 
 def create_window(window_name, session_name):
     """if we have a new window, build a new window object otherwise
@@ -63,19 +61,19 @@ class ClipboardMonitor(tk.Tk):
         self.text_widget.config(yscrollcommand=scrollbar.set)
         scrollbar.config(command=self.text_widget.yview)
 
-        # Button zum Löschen
+        # Button to remove text field content
         clear_button = tk.Button(self, text="Löschen", command=self.clear_text)
         clear_button.pack()
 
-        # Aktualisierung starten
+        # start refresh
         self.update_gui()
 
-    # Erstelle ein Menü
+    # create context menu
     def show_menu(self, event):
         self.menu.post(event.x_root, event.y_root)
 
     def copy_text(self):
-        # Hier wird der ausgewählte Text kopiert
+        # copy from text field itself
         selected_text = self.text_widget.selection_get()
         pyperclip.copy(selected_text)
 
@@ -83,18 +81,20 @@ class ClipboardMonitor(tk.Tk):
         new_value = get_clipboard()
         if new_value != self.old_value and new_value is not None:
             with Session(engine) as session:
+                # get window name with split at english dash
                 window_name = str(gw.getActiveWindow().title).split("–")
-                # ic(window_name)
                 window = create_window(window_name, session)
                 # add the content to database
                 add_content(new_value, window, session)
+            # create header of the gui, window name and Datetime
             window_content = f"{30 * "+"}\n" + \
                 f"{datetime.strftime(datetime.now(), '%a %d %b %Y, %H:%M:%S')} \n" + \
                 f"{window_name[-1].strip()} \n{30 * "-"}\n"
+            # update text field with the new values
             self.text_widget.insert(tk.END, window_content)
             self.text_widget.insert(tk.END, new_value + "\n\n")
             self.old_value = new_value
-
+        # repeat every 1000 ms
         self.after(1000, self.update_gui)
 
     def clear_text(self):
