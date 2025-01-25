@@ -52,24 +52,23 @@ class ClipboardMonitor(tk.Tk):
 
         # Search Field
         search_label = tk.Label(self, text="Suche")
-        search_label.grid(row=0, column=0)
+        search_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
         search_widget = tk.Entry(self)
-        search_widget.grid(row=0, column=1)
+        search_widget.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+        search_button = tk.Button(self, text="Bestätigen", command=self.clear_text)
+        search_button.grid(row=0, column=2, padx=5, pady=5, )
 
         # Text-Widget
         self.text_widget = tk.Text(self)
-        self.text_widget.grid() #.pack(fill=tk.BOTH, expand=True)
+        self.text_widget.grid(row=1, column=0, columnspan=3)
         self.bind("<Button-3>", self.show_menu)
-
-        # Scrollbar
-        # scrollbar = tk.Scrollbar(self)
-        # scrollbar.grid() #.pack(side=tk.RIGHT, fill=tk.Y)
-        # self.text_widget.config(yscrollcommand=scrollbar.set)
-        # scrollbar.config(command=self.text_widget.yview)
 
         # Button to remove text field content
         clear_button = tk.Button(self, text="Löschen", command=self.clear_text)
-        clear_button.grid() #.pack()
+        clear_button.grid(row=2, column=1, padx=5, pady=5)
+
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(1, weight=1)
 
         # start refresh
         self.update_gui()
