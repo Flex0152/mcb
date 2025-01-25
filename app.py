@@ -83,9 +83,10 @@ class ClipboardMonitor(tk.Tk):
         self.menu.post(event.x_root, event.y_root)
 
     def copy_text(self):
-        # copy from text field itself
-        selected_text = self.text_widget.selection_get()
-        pyperclip.copy(selected_text)
+        # copy from text field itself, when content is selected
+        if self.text_widget.tag_ranges('sel'):
+            selected_text = self.text_widget.selection_get()
+            pyperclip.copy(selected_text)
 
     def update_gui(self):
         new_value = get_clipboard()
@@ -114,6 +115,9 @@ class ClipboardMonitor(tk.Tk):
         self.clear_text()
         search_term = self.search_widget.get()
         result = get_content_by_name(search_term)
+        if search_term == "":
+            self.text_widget.insert(tk.END, "Bitte gib ein Suchbegriff an!")
+            return
         if len(result) == 0:
             self.text_widget.insert(tk.END, "Nichts gefunden!")
             return
