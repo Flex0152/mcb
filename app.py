@@ -3,13 +3,19 @@ from time import sleep
 from datetime import datetime
 import pygetwindow as gw
 from model import Content, Window
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 import sqlalchemy as sa
 from model import engine
 from mcb import get_content_by_name
 
 import tkinter as tk
 
+
+# Globale SessionFactory erstellen
+SessionFactory = sessionmaker(bind=engine)
+
+def get_session():
+    return SessionFactory()
 
 def create_window(window_name, session_name):
     """if we have a new window, build a new window object otherwise
@@ -85,7 +91,7 @@ class ClipboardMonitor(tk.Tk):
     def update_gui(self):
         new_value = get_clipboard()
         if new_value != self.old_value and new_value is not None:
-            with Session(engine) as session:
+            with get_session() as session:
                 # get window name with split at english dash
                 window_name = str(gw.getActiveWindow().title).split("–")
                 window = create_window(window_name, session)
