@@ -52,9 +52,9 @@ class ClipboardMonitor(tk.Tk):
 
         # Search Field
         search_label = tk.Label(self, text="Suche")
-        search_label.grid()
+        search_label.grid(row=0, column=0)
         search_widget = tk.Entry(self)
-        search_widget.grid()
+        search_widget.grid(row=0, column=1)
 
         # Text-Widget
         self.text_widget = tk.Text(self)
