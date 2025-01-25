@@ -1,9 +1,8 @@
 import pyperclip
-from time import sleep
 from datetime import datetime
 import pygetwindow as gw
 from model import Content, Window
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import sessionmaker
 import sqlalchemy as sa
 from model import engine
 from mcb import get_content_by_name
@@ -115,6 +114,9 @@ class ClipboardMonitor(tk.Tk):
         self.clear_text()
         search_term = self.search_widget.get()
         result = get_content_by_name(search_term)
+        if len(result) == 0:
+            self.text_widget.insert(tk.END, "Nichts gefunden!")
+            return
         for item in result:
             self.text_widget.insert(tk.END, f"{item}\n\n")
     
