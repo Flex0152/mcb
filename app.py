@@ -2,11 +2,11 @@ import pyperclip
 from time import sleep
 from datetime import datetime
 import pygetwindow as gw
-from rich import print as rprint
 from model import Content, Window
 from sqlalchemy.orm import Session
 import sqlalchemy as sa
 from model import engine
+from mcb import get_content_by_name
 
 import tkinter as tk
 
@@ -51,11 +51,11 @@ class ClipboardMonitor(tk.Tk):
         self.menu.add_command(label="Kopieren", command=self.copy_text)
 
         # Search Field
-        search_label = tk.Label(self, text="Suche")
+        search_label = tk.Label(self, text="Suche:")
         search_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-        search_widget = tk.Entry(self)
-        search_widget.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
-        search_button = tk.Button(self, text="Bestätigen", command=self.clear_text)
+        self.search_widget = tk.Entry(self)
+        self.search_widget.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+        search_button = tk.Button(self, text="Bestätigen", command=self.search_text)
         search_button.grid(row=0, column=2, padx=5, pady=5, )
 
         # Text-Widget
@@ -104,6 +104,13 @@ class ClipboardMonitor(tk.Tk):
 
     def clear_text(self):
         self.text_widget.delete('1.0', tk.END)
+
+    def search_text(self):
+        self.clear_text()
+        search_term = self.search_widget.get()
+        result = get_content_by_name(search_term)
+        for item in result:
+            self.text_widget.insert(tk.END, f"{item}\n\n")
     
 
 if __name__ == '__main__':
