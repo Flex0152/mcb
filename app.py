@@ -5,7 +5,7 @@ from model import Content, Window
 from sqlalchemy.orm import sessionmaker
 import sqlalchemy as sa
 from model import engine
-from mcb import get_content_by_name
+from mcb import get_content_by_name, get_content_by_windowname
 
 import tkinter as tk
 
@@ -59,24 +59,33 @@ class ClipboardMonitor(tk.Tk):
         search_label = tk.Label(self, text="Suche:")
         search_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
         self.search_widget = tk.Entry(self)
+        self.search_widget.bind("<Return>", self.on_enter)
         self.search_widget.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
-        search_button = tk.Button(self, text="Bestätigen", command=self.search_text)
-        search_button.grid(row=0, column=2, padx=5, pady=5, )
+
+        search_button = tk.Button(self, text="Text Suche", command=self.search_text)
+        categorie_search_button = tk.Button(self, text="Kategorie Suche", command=self.search_category)
+
+        search_button.grid(row=0, column=2, padx=5, pady=5)
+        categorie_search_button.grid(row=0, column=3, padx=5, pady=5)
 
         # Text-Widget
         self.text_widget = tk.Text(self)
-        self.text_widget.grid(row=1, column=0, columnspan=3)
+        self.text_widget.grid(row=1, column=0, columnspan=4)
         self.bind("<Button-3>", self.show_menu)
 
         # Button to remove text field content
         clear_button = tk.Button(self, text="Löschen", command=self.clear_text)
-        clear_button.grid(row=2, column=1, padx=5, pady=5)
+        clear_button.grid(row=2, column=1, columnspan=2, padx=5, pady=5)
 
         self.columnconfigure(1, weight=1)
         self.rowconfigure(1, weight=1)
 
         # start refresh
         self.update_gui()
+
+    # Enter Event
+    def on_enter(self, event):
+        self.search_text()
 
     # create context menu
     def show_menu(self, event):
@@ -111,17 +120,31 @@ class ClipboardMonitor(tk.Tk):
     def clear_text(self):
         self.text_widget.delete('1.0', tk.END)
 
-    def search_text(self):
-        self.clear_text()
+    def search_category(self):
         search_term = self.search_widget.get()
-        result = get_content_by_name(search_term)
         if search_term == "":
             self.text_widget.insert(tk.END, "Bitte gib ein Suchbegriff an!")
             return
-        if len(result) == 0:
+        
+        result = get_content_by_windowname(search_term)
+        self.handle_result(result)
+
+    def search_text(self):
+        search_term = self.search_widget.get()
+        if search_term == "":
+            self.text_widget.insert(tk.END, "Bitte gib ein Suchbegriff an!")
+            return
+        
+        result = get_content_by_name(search_term)
+        self.handle_result(result)
+
+    def handle_result(self, list_items:list):
+        self.clear_text()
+        
+        if len(list_items) == 0:
             self.text_widget.insert(tk.END, "Nichts gefunden!")
             return
-        for item in result:
+        for item in list_items:
             self.text_widget.insert(tk.END, f"{item}\n\n")
     
 
