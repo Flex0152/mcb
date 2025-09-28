@@ -1,5 +1,5 @@
 # General
-This is a small application for monitoring the Windows clipboard. The GUI in app.py creates a Tkinter text field. The text field updates with each new value from the clipboard.
+This is a small application for monitoring the Windows clipboard. The GUI in app.py creates a Tkinter TreeView. The Treeview updates with each new value from the clipboard.
 The values are also stored in a database located in the same folder. The database can be searched using the search field by text content or by category.
 Additionally, there is a CLI with mcb.py. The CLI allows you to search the database.
 
@@ -8,4 +8,4 @@ There is currently a bug in version 3.13 related to virtual environments and Tki
 Alternatively, you can use an older Python version.
 
 ## todo
-The functions "search_category," "search_text," and "handle_result" need to be revised.
+The entries should be markable as a text block. A separate Treeview will display all entries that have been marked as a text block.
