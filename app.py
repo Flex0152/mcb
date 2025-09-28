@@ -40,12 +40,6 @@ def get_clipboard() -> str | None:
     except pyperclip.PyperclipException:
         return None
 
-def format_output(value: str) -> None:
-    """Simple formated output"""
-    print("+"*40)
-    print()
-    print(value + "\n")
-
 class ClipboardMonitor(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -57,7 +51,7 @@ class ClipboardMonitor(tk.Tk):
         self.menu.add_command(label="Kopieren", command=self.copy_text)
 
         # Search Field
-        search_label = tk.Label(self, text="Suche:")
+        search_label = ttk.Label(self, text="Suche:")
         search_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
         self.search_widget = ttk.Entry(self)
         self.search_widget.bind("<Return>", self.on_enter)
@@ -65,12 +59,17 @@ class ClipboardMonitor(tk.Tk):
 
         search_button = ttk.Button(self, text="Text Suche", command=self.search_text)
         categorie_search_button = ttk.Button(self, text="Kategorie Suche", command=self.search_category)
+        reset_button = ttk.Button(self, text="Reset", command=self.clear_treeview)
 
         search_button.grid(row=0, column=2, padx=5, pady=5)
         categorie_search_button.grid(row=0, column=3, padx=5, pady=5)
+        reset_button.grid(row=0, column=4, padx=5, pady=5)
 
         # Treeview Widget
         self._create_data_tv()
+
+        self.response_label = ttk.Label(self)
+        self.response_label.grid(row=2, column=0, columnspan=4, padx=5, pady=5, sticky="nsew")
 
         self.columnconfigure(1, weight=1)
         self.rowconfigure(1, weight=1)
@@ -90,8 +89,8 @@ class ClipboardMonitor(tk.Tk):
         self.vsb = ttk.Scrollbar(self, orient="vertical", command=self.tv.yview)
         self.tv.configure(yscrollcommand=self.vsb.set)
 
-        self.tv.grid(row=1, column=0, columnspan=4, padx=5, pady=5, sticky="nsew")
-        self.vsb.grid(row=1, column=4, sticky="ns")
+        self.tv.grid(row=1, column=0, columnspan=5, padx=5, pady=5, sticky="nsew")
+        self.vsb.grid(row=1, column=5, sticky="ns")
 
     # Enter Event
     def on_enter(self, event):
@@ -102,11 +101,15 @@ class ClipboardMonitor(tk.Tk):
         self.menu.post(event.x_root, event.y_root)
 
     def copy_text(self):
+        self.response_label['text'] = ""
         # copy from text field itself, when content is selected
         curItem = self.tv.item(self.tv.focus())
         if isinstance(curItem['values'], list):
             selected_text = curItem['values'][0]
             pyperclip.copy(selected_text)
+            self.response_label['text'] = "In Zwischenablage"
+        else:
+            self.response_label['text'] = "Nichts ausgewählt"
 
     def update_gui(self):
         new_value = get_clipboard()
@@ -136,21 +139,25 @@ class ClipboardMonitor(tk.Tk):
             self.tv.delete(item)
 
     def search_category(self):
+        self.response_label['text'] = ""
         search_term = self.search_widget.get()
         if search_term == "":
-            # self.text_widget.insert(tk.END, "Bitte gib ein Suchbegriff an!")
+            self.response_label['text'] = "Bitte gib ein Suchbegriff an!"
             return
         
         result = get_content_by_windowname(search_term)
+        self.response_label['text'] = f"Gefundene Elemente: {len(result)}"
         self._handle_result(result)
 
     def search_text(self):
+        self.response_label['text'] = ""
         search_term = self.search_widget.get()
         if search_term == "":
-            # self.text_widget.insert(tk.END, "Bitte gib ein Suchbegriff an!")
+            self.response_label['text'] = "Bitte gib ein Suchbegriff an!"
             return
         
         result = get_content_by_name(search_term)
+        self.response_label['text'] = f"Gefundene Elemente: {len(result)}"
         self._handle_result(result)
 
     def _handle_result(self, list_items:list):
