@@ -8,6 +8,7 @@ from model import engine
 from mcb import get_content_by_name, get_content_by_windowname
 
 import tkinter as tk
+from tkinter import ttk
 
 
 # Globale SessionFactory erstellen
@@ -58,12 +59,12 @@ class ClipboardMonitor(tk.Tk):
         # Search Field
         search_label = tk.Label(self, text="Suche:")
         search_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-        self.search_widget = tk.Entry(self)
+        self.search_widget = ttk.Entry(self)
         self.search_widget.bind("<Return>", self.on_enter)
         self.search_widget.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
 
-        search_button = tk.Button(self, text="Text Suche", command=self.search_text)
-        categorie_search_button = tk.Button(self, text="Kategorie Suche", command=self.search_category)
+        search_button = ttk.Button(self, text="Text Suche", command=self.search_text)
+        categorie_search_button = ttk.Button(self, text="Kategorie Suche", command=self.search_category)
 
         search_button.grid(row=0, column=2, padx=5, pady=5)
         categorie_search_button.grid(row=0, column=3, padx=5, pady=5)
@@ -74,7 +75,7 @@ class ClipboardMonitor(tk.Tk):
         self.bind("<Button-3>", self.show_menu)
 
         # Button to remove text field content
-        clear_button = tk.Button(self, text="Löschen", command=self.clear_text)
+        clear_button = ttk.Button(self, text="Löschen", command=self.clear_text)
         clear_button.grid(row=2, column=1, columnspan=2, padx=5, pady=5)
 
         self.columnconfigure(1, weight=1)
