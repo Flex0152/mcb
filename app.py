@@ -69,10 +69,8 @@ class ClipboardMonitor(tk.Tk):
         search_button.grid(row=0, column=2, padx=5, pady=5)
         categorie_search_button.grid(row=0, column=3, padx=5, pady=5)
 
-        # Text-Widget
-        self.text_widget = tk.Text(self)
-        self.text_widget.grid(row=1, column=0, columnspan=4)
-        self.bind("<Button-3>", self.show_menu)
+        # Treeview Widget
+        self._create_data_tv()
 
         # Button to remove text field content
         clear_button = ttk.Button(self, text="Löschen", command=self.clear_text)
@@ -83,6 +81,19 @@ class ClipboardMonitor(tk.Tk):
 
         # start refresh
         self.update_gui()
+
+    def _create_data_tv(self):
+        self.tv = ttk.Treeview(self, columns=["content", "window_name"])
+        self.tv.heading("#0", text="date")
+        self.tv.heading("content", text="Content")
+        self.tv.heading("window_name", text="Window Name")
+
+        # Vertikale Scrollbar
+        self.vsb = ttk.Scrollbar(self, orient="vertical", command=self.tv.yview)
+        self.tv.configure(yscrollcommand=self.vsb.set)
+
+        self.tv.grid(row=1, column=0, columnspan=4, sticky="nsew")
+        self.vsb.grid(row=1, column=4, sticky="ns")
 
     # Enter Event
     def on_enter(self, event):
@@ -107,13 +118,15 @@ class ClipboardMonitor(tk.Tk):
                 window = create_window(window_name, session)
                 # add the content to database
                 add_content(new_value, window, session)
-            # create header of the gui, window name and Datetime
-            window_content = f"{30 * "+"}\n" + \
-                f"{datetime.strftime(datetime.now(), '%a %d %b %Y, %H:%M:%S')} \n" + \
-                f"{window_name[-1].strip()} \n{30 * "-"}\n"
-            # update text field with the new values
-            self.text_widget.insert(tk.END, window_content)
-            self.text_widget.insert(tk.END, new_value + "\n\n")
+
+            self.tv.insert(
+                "",
+                tk.END,
+                # iid=row[0],
+                text=f"{datetime.strftime(datetime.now(), '%a %d %b %Y, %H:%M:%S')}",
+                values=[new_value, window_name[-1].strip()]
+            )   
+
             self.old_value = new_value
         # repeat every 1000 ms
         self.after(1000, self.update_gui)
