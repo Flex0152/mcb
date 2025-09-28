@@ -41,20 +41,24 @@ def get_content_by_name(name: str) -> list:
             .scalars(sa.Select(Content) \
             .filter(Content.content.like(f"%{name}%"))).all()
         
-        result = [content.content for content in contents]
+        # result = [content.content for content in contents]
+        result = [{"content":content.content, "created":f"{content.created}"} 
+                  for content in contents]
         return result 
 
 def get_content_by_windowname(name: str):
     """Ruft den Content des angegebenen Fensters ab."""
     with so.Session(engine) as session:
         contents = (
-        session.query(Content.content)
+        session.query(Content)
         .join(Content.windows)
         .filter(Window.windowName.like(f"%{name}%"))
         .all()
         )
         
-        result = [content.content for content in contents]
+        # result = [content.content for content in contents]
+        result = [{"content":content.content, "created":f"{content.created}"} 
+                  for content in contents]
         return result
 
 def get_content_by_id(id: int):
@@ -77,7 +81,9 @@ def show(suchbegriff: str = "", windowname: str = "") -> None:
 
     if len(results) > 0:
         for item in results:
-            print(Panel(item))
+            content = item['content']
+            created = item['created']
+            print(Panel(f"Erstellt am: \t{created}\nContent: \t{content}"))
     else:
         print(Panel(":-1: Keine Ergebnisse"))
 

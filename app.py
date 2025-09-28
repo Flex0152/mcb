@@ -130,32 +130,42 @@ class ClipboardMonitor(tk.Tk):
         # repeat every 1000 ms
         self.after(1000, self.update_gui)
 
+    def clear_treeview(self):
+        """TreeView komplett leeren"""
+        for item in self.tv.get_children():
+            self.tv.delete(item)
+
     def search_category(self):
         search_term = self.search_widget.get()
         if search_term == "":
-            self.text_widget.insert(tk.END, "Bitte gib ein Suchbegriff an!")
+            # self.text_widget.insert(tk.END, "Bitte gib ein Suchbegriff an!")
             return
         
         result = get_content_by_windowname(search_term)
-        self.handle_result(result)
+        self._handle_result(result)
 
     def search_text(self):
         search_term = self.search_widget.get()
         if search_term == "":
-            self.text_widget.insert(tk.END, "Bitte gib ein Suchbegriff an!")
+            # self.text_widget.insert(tk.END, "Bitte gib ein Suchbegriff an!")
             return
         
         result = get_content_by_name(search_term)
-        self.handle_result(result)
+        self._handle_result(result)
 
-    def handle_result(self, list_items:list):
-        self.clear_text()
+    def _handle_result(self, list_items:list):
+        """Shows the search results"""
+        self.clear_treeview()
         
-        if len(list_items) == 0:
-            self.text_widget.insert(tk.END, "Nichts gefunden!")
-            return
-        for item in list_items:
-            self.text_widget.insert(tk.END, f"{item}\n\n")
+        if len(list_items) > 0:
+            for item in list_items:
+                self.tv.insert(
+                "",
+                tk.END,
+                # iid=row[0],
+                text=item['created'],
+                values=[item['content']]
+            ) 
     
 
 if __name__ == '__main__':
