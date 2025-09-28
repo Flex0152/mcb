@@ -41,7 +41,6 @@ def get_content_by_name(name: str) -> list:
             .scalars(sa.Select(Content) \
             .filter(Content.content.like(f"%{name}%"))).all()
         
-        # result = [content.content for content in contents]
         result = [{"content":content.content, "created":f"{content.created}"} 
                   for content in contents]
         return result 
@@ -56,7 +55,6 @@ def get_content_by_windowname(name: str):
         .all()
         )
         
-        # result = [content.content for content in contents]
         result = [{"content":content.content, "created":f"{content.created}"} 
                   for content in contents]
         return result
