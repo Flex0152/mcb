@@ -84,11 +84,13 @@ class ClipboardMonitor(tk.Tk):
         self.tv.heading("content", text="Content")
         self.tv.heading("window_name", text="Window Name")
 
+        self.tv.bind("<Button-3>", self.show_menu)
+
         # Vertikale Scrollbar
         self.vsb = ttk.Scrollbar(self, orient="vertical", command=self.tv.yview)
         self.tv.configure(yscrollcommand=self.vsb.set)
 
-        self.tv.grid(row=1, column=0, columnspan=4, sticky="nsew")
+        self.tv.grid(row=1, column=0, columnspan=4, padx=5, pady=5, sticky="nsew")
         self.vsb.grid(row=1, column=4, sticky="ns")
 
     # Enter Event
@@ -101,8 +103,9 @@ class ClipboardMonitor(tk.Tk):
 
     def copy_text(self):
         # copy from text field itself, when content is selected
-        if self.text_widget.tag_ranges('sel'):
-            selected_text = self.text_widget.selection_get()
+        curItem = self.tv.item(self.tv.focus())
+        if isinstance(curItem['values'], list):
+            selected_text = curItem['values'][0]
             pyperclip.copy(selected_text)
 
     def update_gui(self):
