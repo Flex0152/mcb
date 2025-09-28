@@ -4,28 +4,13 @@ Zum laden der Elemente in die Zwischenablage.
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from model import Content, Window
-# from app import engine
 from model import engine
-import pandas as pd
 from rich.panel import Panel
-from rich import print
+from rich import print as rprint
 from typer import Typer
 
 
 app = Typer()
-
-def convert_to_DataFrame(result: list) -> pd.DataFrame:
-    """Erstellt im ersten Schritt eine Liste mit Dictonarys. Diese Liste 
-    wird in ein DataFrame konvertiert und zurückgegeben"""
-    erg = []
-    results = result # get_all_rows()
-    for row in results:
-        tmp = {
-            "ID" : row.id,
-            "Content" : row.content.strip()
-        }
-        erg.append(tmp)
-    return pd.DataFrame(erg)
 
 def get_all_rows():
     """Ruft alle Zeilen der Content Tabelle ab."""
@@ -81,9 +66,9 @@ def show(suchbegriff: str = "", windowname: str = "") -> None:
         for item in results:
             content = item['content']
             created = item['created']
-            print(Panel(f"Erstellt am: \t{created}\nContent: \t{content}"))
+            rprint(Panel(f"Erstellt am: \t{created}\nContent: \t{content}"))
     else:
-        print(Panel(":-1: Keine Ergebnisse"))
+        rprint(Panel(":-1: Keine Ergebnisse"))
 
 
 if __name__ == '__main__':    
