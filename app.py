@@ -72,10 +72,6 @@ class ClipboardMonitor(tk.Tk):
         # Treeview Widget
         self._create_data_tv()
 
-        # Button to remove text field content
-        clear_button = ttk.Button(self, text="Löschen", command=self.clear_text)
-        clear_button.grid(row=2, column=1, columnspan=2, padx=5, pady=5)
-
         self.columnconfigure(1, weight=1)
         self.rowconfigure(1, weight=1)
 
@@ -130,9 +126,6 @@ class ClipboardMonitor(tk.Tk):
             self.old_value = new_value
         # repeat every 1000 ms
         self.after(1000, self.update_gui)
-
-    def clear_text(self):
-        self.text_widget.delete('1.0', tk.END)
 
     def search_category(self):
         search_term = self.search_widget.get()
