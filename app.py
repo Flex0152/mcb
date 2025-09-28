@@ -8,7 +8,8 @@ from model import engine
 from mcb import get_content_by_name, get_content_by_windowname
 
 import tkinter as tk
-from tkinter import ttk
+# from tkinter import ttk
+import ttkbootstrap as ttk
 
 
 # Globale SessionFactory erstellen
@@ -43,11 +44,12 @@ def get_clipboard() -> str | None:
 class ClipboardMonitor(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.style = ttk.Style("superhero") # solar, vapor, pulse, lumen, superhero
         self.title("Zwischenablage-Monitor")
 
         self.old_value = None
 
-        self.menu = tk.Menu(self, tearoff=0)
+        self.menu = ttk.Menu(self, tearoff=0)
         self.menu.add_command(label="Kopieren", command=self.copy_text)
 
         # Search Field
@@ -123,7 +125,7 @@ class ClipboardMonitor(tk.Tk):
 
             self.tv.insert(
                 "",
-                tk.END,
+                0,
                 # iid=row[0],
                 text=f"{datetime.strftime(datetime.now(), '%a %d %b %Y, %H:%M:%S')}",
                 values=[new_value, window_name[-1].strip()]
